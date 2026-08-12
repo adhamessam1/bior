@@ -4,7 +4,7 @@ import Admin from "./pages/Admin";
 function App() {
   const path = window.location.pathname;
 
-  if (path === "/admin") {
+  if (path === "/bior/admin" || path === "/admin") {
     return <Admin />;
   }
 

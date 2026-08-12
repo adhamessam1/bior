@@ -17,21 +17,32 @@ function Products({ searchTerm = "" }) {
   }
 
   return (
-    <section className="py-14 sm:py-20 bg-white">
-      <div className="max-w-7xl mx-auto px-5 sm:px-8">
+    <section
+      id="products"
+      className="bg-white py-16 sm:py-20"
+    >
+      <div className="mx-auto max-w-7xl px-5 sm:px-8">
 
+        {/* Section Header */}
         <div className="text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold">
+          <span className="text-xs font-semibold tracking-[0.2em] text-gray-400">
+            BIOR PRODUCTS
+          </span>
+
+          <h2 className="mt-3 text-3xl font-bold text-gray-900 sm:text-4xl">
             {search === "الجديد" ? "أحدث المنتجات" : "منتجات BIOR"}
           </h2>
 
-          <p className="text-gray-500 mt-3 text-sm sm:text-base">
-            اكتشفي أحدث تشكيلات الملابس الحريمي
+          <p className="mt-3 text-sm text-gray-500 sm:text-base">
+            {search
+              ? `النتائج الخاصة بـ "${search}"`
+              : "اكتشفي أحدث تشكيلات الملابس الحريمي"}
           </p>
         </div>
 
+        {/* Products */}
         {filteredProducts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-8 mt-10 sm:mt-14">
+          <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-8 lg:grid-cols-4">
             {filteredProducts.map((product) => (
               <ProductCard
                 key={product.id}
@@ -40,8 +51,14 @@ function Products({ searchTerm = "" }) {
             ))}
           </div>
         ) : (
-          <div className="text-center py-16 text-gray-500">
-            مفيش منتجات مطابقة.
+          <div className="py-16 text-center text-gray-500">
+            <p className="text-lg font-medium">
+              مفيش منتجات مطابقة.
+            </p>
+
+            <p className="mt-2 text-sm">
+              جربي البحث عن قسم أو منتج تاني.
+            </p>
           </div>
         )}
 

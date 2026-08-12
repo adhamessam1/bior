@@ -30,23 +30,24 @@ function Features() {
   ];
 
   return (
-    <section className="py-14 sm:py-20 bg-white">
-      <div className="max-w-7xl mx-auto px-5 sm:px-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-8">
+    <section className="bg-white py-16 sm:py-20">
+      <div className="mx-auto max-w-7xl px-5 sm:px-8">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {features.map((item, index) => (
             <div
               key={index}
-              className="bg-gray-50 rounded-2xl p-7 text-center shadow-sm hover:shadow-lg transition"
+              className="group rounded-2xl border border-gray-100 bg-white p-6 text-center shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg"
             >
-              <div className="text-4xl text-green-600 flex justify-center mb-4">
+              {/* Icon */}
+              <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-50 text-xl text-gray-900 transition duration-300 group-hover:bg-black group-hover:text-white">
                 {item.icon}
               </div>
 
-              <h3 className="text-lg sm:text-xl font-semibold">
+              <h3 className="text-lg font-semibold text-gray-900 sm:text-xl">
                 {item.title}
               </h3>
 
-              <p className="text-gray-500 mt-2 leading-7 text-sm sm:text-base">
+              <p className="mt-3 text-sm leading-7 text-gray-500 sm:text-base">
                 {item.desc}
               </p>
             </div>

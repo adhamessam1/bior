@@ -9,22 +9,29 @@ import Footer from "../components/Footer/Footer";
 
 function Home() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [showNew, setShowNew] = useState(false);
 
   return (
     <>
       <Navbar
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
+        showNew={showNew}
+        setShowNew={setShowNew}
       />
 
       <Hero />
 
       <Features />
 
-     <Categories setSearchTerm={setSearchTerm} />
+      <Categories
+        setSearchTerm={setSearchTerm}
+        setShowNew={setShowNew}
+      />
 
       <Products
         searchTerm={searchTerm}
+        showNew={showNew}
       />
 
       <Footer />

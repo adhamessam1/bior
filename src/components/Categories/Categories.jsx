@@ -1,4 +1,4 @@
-function Categories({ setSearchTerm }) {
+function Categories({ setSearchTerm, setShowNew }) {
   const categories = [
     "شميز",
     "هودي",
@@ -12,44 +12,75 @@ function Categories({ setSearchTerm }) {
   ];
 
   const handleCategoryClick = (category) => {
+    setShowNew(false);
     setSearchTerm(category);
+
+    setTimeout(() => {
+      document.getElementById("products")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 100);
+  };
+
+  const handleShowAll = () => {
+    setShowNew(false);
+    setSearchTerm("");
+
+    setTimeout(() => {
+      document.getElementById("products")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 100);
   };
 
   return (
-    <section className="py-14 sm:py-20 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-5 sm:px-8">
+    <section
+  id="categories"
+  className="bg-gray-50 py-16 sm:py-20"
+>
+      <div className="mx-auto max-w-7xl px-5 sm:px-8">
 
+        {/* Section Header */}
         <div className="text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold">
+          <span className="text-xs font-semibold tracking-[0.2em] text-gray-400">
+            BIOR COLLECTIONS
+          </span>
+
+          <h2 className="mt-3 text-3xl font-bold text-gray-900 sm:text-4xl">
             تصفحي حسب القسم
           </h2>
 
-          <p className="text-gray-500 mt-4 text-sm sm:text-base">
+          <p className="mt-4 text-sm text-gray-500 sm:text-base">
             اكتشفي أحدث تشكيلات الملابس الحريمي
           </p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-5 mt-10 sm:mt-12">
+        {/* Categories */}
+        <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
           {categories.map((category) => (
             <button
               key={category}
               type="button"
               onClick={() => handleCategoryClick(category)}
-              className="h-32 sm:h-40 bg-white rounded-2xl flex items-center justify-center shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              className="group relative flex h-28 items-center justify-center overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-black hover:shadow-lg sm:h-32"
             >
-              <h3 className="text-base sm:text-lg font-semibold">
+              <span className="relative z-10 text-base font-semibold text-gray-800 transition-colors duration-300 group-hover:text-white sm:text-lg">
                 {category}
-              </h3>
+              </span>
+
+              <span className="absolute inset-0 translate-y-full bg-black transition-transform duration-300 group-hover:translate-y-0" />
             </button>
           ))}
         </div>
 
-        {/* عرض كل المنتجات */}
-        <div className="flex justify-center mt-8">
+        {/* All Products */}
+        <div className="mt-10 flex justify-center">
           <button
             type="button"
-            onClick={() => setSearchTerm("")}
-            className="px-8 py-3 bg-black text-white rounded-full hover:bg-gray-800 transition"
+            onClick={handleShowAll}
+            className="rounded-full bg-black px-8 py-3 text-sm font-medium text-white transition hover:bg-gray-800"
           >
             عرض كل المنتجات
           </button>
