@@ -44,7 +44,6 @@ function NavLinks({
       return;
     }
 
-    // الأقسام العادية
     setShowNew(false);
     setSearchTerm(link);
 
@@ -57,25 +56,42 @@ function NavLinks({
   };
 
   return (
-    <div className="border-t border-gray-100">
-      <nav className="mx-auto max-w-7xl px-5 sm:px-8">
-        <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-4 py-5 sm:gap-x-8">
-          {links.map((link) => (
-            <li key={link}>
-              <button
-                type="button"
-                onClick={() => handleClick(link)}
-                className="group relative text-sm font-medium text-gray-700 transition hover:text-black"
-              >
-                {link}
+    <nav className="w-full border-t border-gray-100 bg-white">
+      <div className="mx-auto max-w-7xl overflow-x-auto px-5 sm:px-8 lg:px-10">
+        <ul className="flex min-w-max items-center justify-center gap-7 py-4 sm:gap-9 lg:gap-10">
 
-                <span className="absolute -bottom-2 right-0 h-0.5 w-0 bg-black transition-all duration-300 group-hover:w-full" />
-              </button>
-            </li>
-          ))}
+          {links.map((link) => {
+            const isActive =
+              link === "الجديد" && showNew;
+
+            return (
+              <li key={link}>
+                <button
+                  type="button"
+                  onClick={() => handleClick(link)}
+                  className={`group relative whitespace-nowrap pb-1 text-xs font-medium tracking-wide transition-colors duration-300 sm:text-sm ${
+                    isActive
+                      ? "text-black"
+                      : "text-gray-500 hover:text-black"
+                  }`}
+                >
+                  {link}
+
+                  <span
+                    className={`absolute bottom-0 right-0 h-px bg-black transition-all duration-300 ${
+                      isActive
+                        ? "w-full"
+                        : "w-0 group-hover:w-full"
+                    }`}
+                  />
+                </button>
+              </li>
+            );
+          })}
+
         </ul>
-      </nav>
-    </div>
+      </div>
+    </nav>
   );
 }
 

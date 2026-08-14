@@ -8,17 +8,23 @@ function Navbar({
   setShowNew,
 }) {
   return (
-    <header className="w-full border-b border-gray-100 bg-white">
+    <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md">
+
+      {/* Main Header */}
       <MainHeader
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
       />
 
-      <NavLinks
-        setSearchTerm={setSearchTerm}
-        showNew={showNew}
-        setShowNew={setShowNew}
-      />
+      {/* Navigation */}
+      <div className="border-t border-gray-100">
+        <NavLinks
+          setSearchTerm={setSearchTerm}
+          showNew={showNew}
+          setShowNew={setShowNew}
+        />
+      </div>
+
     </header>
   );
 }

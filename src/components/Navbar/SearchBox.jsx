@@ -11,17 +11,17 @@ function SearchBox({ searchTerm, setSearchTerm }) {
   };
 
   return (
-    <div className="flex w-full items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 transition focus-within:border-black focus-within:bg-white">
+    <div className="group flex w-full items-center gap-3 border-b border-gray-300 bg-white px-1 py-2 transition-colors duration-300 focus-within:border-black">
+      <FaSearch className="shrink-0 text-sm text-gray-400 transition-colors group-focus-within:text-black" />
+
       <input
         type="text"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder="ابحثي عن منتج..."
-        className="min-w-0 flex-1 bg-transparent text-right text-sm outline-none"
+        placeholder="ابحثي عن منتج أو قسم..."
+        className="min-w-0 flex-1 bg-transparent py-1 text-right text-sm text-gray-900 outline-none placeholder:text-gray-400"
       />
-
-      <FaSearch className="shrink-0 text-gray-500" />
     </div>
   );
 }
