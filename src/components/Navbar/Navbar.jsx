@@ -9,7 +9,7 @@ function Navbar({
 }) {
   return (
     <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md">
-
+      
       {/* Main Header */}
       <MainHeader
         searchTerm={searchTerm}
@@ -17,13 +17,11 @@ function Navbar({
       />
 
       {/* Navigation */}
-      <div className="border-t border-gray-100">
-        <NavLinks
-          setSearchTerm={setSearchTerm}
-          showNew={showNew}
-          setShowNew={setShowNew}
-        />
-      </div>
+      <NavLinks
+        setSearchTerm={setSearchTerm}
+        showNew={showNew}
+        setShowNew={setShowNew}
+      />
 
     </header>
   );

@@ -65,14 +65,12 @@ function Admin() {
 
     if (!file) return;
 
-    // السماح بالصور فقط
     if (!file.type.startsWith("image/")) {
       alert("من فضلك اختر صورة فقط");
       e.target.value = "";
       return;
     }
 
-    // حجم الصورة: 5MB
     if (file.size > 5 * 1024 * 1024) {
       alert("حجم الصورة يجب ألا يتجاوز 5 ميجابايت");
       e.target.value = "";
@@ -82,7 +80,7 @@ function Admin() {
     setUploadingImage(true);
 
     try {
-      const fileExt = file.name.split(".").pop();
+      const fileExt = file.name.split(".").pop()?.toLowerCase();
 
       const fileName = `${Date.now()}-${Math.random()
         .toString(36)
@@ -90,7 +88,6 @@ function Admin() {
 
       const filePath = `products/${fileName}`;
 
-      // رفع الصورة إلى bucket products
       const { error: uploadError } = await supabase.storage
         .from("products")
         .upload(filePath, file, {
@@ -104,7 +101,6 @@ function Admin() {
         return;
       }
 
-      // الحصول على الرابط العام
       const { data } = supabase.storage
         .from("products")
         .getPublicUrl(filePath);
@@ -114,7 +110,6 @@ function Admin() {
         return;
       }
 
-      // حفظ الرابط داخل الفورم
       setForm((prev) => ({
         ...prev,
         image: data.publicUrl,
@@ -168,8 +163,8 @@ function Admin() {
 
     const price = Number(form.price);
 
-    if (price < 0) {
-      alert("السعر لا يمكن أن يكون أقل من صفر");
+    if (Number.isNaN(price) || price < 0) {
+      alert("السعر غير صحيح");
       return;
     }
 
@@ -178,15 +173,14 @@ function Admin() {
       Math.max(0, Number(form.discount_percent) || 0)
     );
 
-    // مهم:
-    // اسم العمود في Supabase هو isNew
+    // اسم العمود في Supabase هو is_new
     const productData = {
       name: form.name.trim(),
       category: form.category,
-      price: price,
+      price,
       discount_percent: discount,
       image: form.image.trim(),
-      isNew: Boolean(form.isNew),
+      is_new: Boolean(form.isNew),
     };
 
     setSaving(true);
@@ -244,7 +238,7 @@ function Admin() {
       price: product.price ?? "",
       discount_percent: product.discount_percent ?? 0,
       image: product.image || "",
-      isNew: Boolean(product.isNew),
+      isNew: Boolean(product.is_new),
     });
 
     window.scrollTo({
@@ -286,35 +280,35 @@ function Admin() {
   return (
     <div
       dir="rtl"
-      className="min-h-screen bg-gray-100 px-5 py-8 sm:px-8"
+      className="min-h-screen w-full overflow-x-hidden bg-gray-100 px-4 py-6 sm:px-8 sm:py-8"
     >
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto w-full max-w-7xl">
 
         {/* Header */}
-        <div className="rounded-2xl bg-white p-6 shadow-sm">
+        <div className="rounded-2xl bg-white p-5 shadow-sm sm:p-6">
           <span className="text-xs font-semibold tracking-[0.2em] text-gray-400">
             BIOR ADMIN
           </span>
 
-          <h1 className="mt-3 text-3xl font-bold text-gray-900">
+          <h1 className="mt-3 text-2xl font-bold text-gray-900 sm:text-3xl">
             لوحة تحكم BIOR
           </h1>
 
-          <p className="mt-2 text-gray-500">
+          <p className="mt-2 text-sm leading-7 text-gray-500">
             إدارة منتجات BIOR وإضافة الصور والأسعار والخصومات بسهولة.
           </p>
         </div>
 
         {/* Form */}
-        <div className="mt-6 rounded-2xl bg-white p-6 shadow-sm">
+        <div className="mt-5 rounded-2xl bg-white p-5 shadow-sm sm:mt-6 sm:p-6">
 
-          <h2 className="text-2xl font-bold text-gray-900">
+          <h2 className="text-xl font-bold text-gray-900 sm:text-2xl">
             {editingId !== null
               ? "تعديل المنتج"
               : "إضافة منتج جديد"}
           </h2>
 
-          <p className="mt-2 text-sm text-gray-500">
+          <p className="mt-2 text-sm leading-7 text-gray-500">
             {editingId !== null
               ? "عدّل البيانات المطلوبة ثم اضغط حفظ التعديلات."
               : "املأ البيانات التالية لإضافة منتج جديد."}
@@ -326,7 +320,7 @@ function Admin() {
           >
 
             {/* Name */}
-            <div>
+            <div className="min-w-0">
               <label className="mb-2 block font-medium">
                 اسم المنتج
               </label>
@@ -337,12 +331,12 @@ function Admin() {
                 value={form.name}
                 onChange={handleChange}
                 placeholder="مثال: هودي حريمي"
-                className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none transition focus:border-black"
+                className="box-border w-full min-w-0 rounded-xl border border-gray-300 px-4 py-3 outline-none transition focus:border-black"
               />
             </div>
 
             {/* Category */}
-            <div>
+            <div className="min-w-0">
               <label className="mb-2 block font-medium">
                 القسم
               </label>
@@ -351,7 +345,7 @@ function Admin() {
                 name="category"
                 value={form.category}
                 onChange={handleChange}
-                className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 outline-none transition focus:border-black"
+                className="box-border w-full min-w-0 rounded-xl border border-gray-300 bg-white px-4 py-3 outline-none transition focus:border-black"
               >
                 <option value="شميز">شميز</option>
                 <option value="هودي">هودي</option>
@@ -366,7 +360,7 @@ function Admin() {
             </div>
 
             {/* Price */}
-            <div>
+            <div className="min-w-0">
               <label className="mb-2 block font-medium">
                 السعر الأصلي
               </label>
@@ -378,12 +372,13 @@ function Admin() {
                 onChange={handleChange}
                 placeholder="مثال: 850"
                 min="0"
-                className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none transition focus:border-black"
+                inputMode="numeric"
+                className="box-border w-full min-w-0 rounded-xl border border-gray-300 px-4 py-3 outline-none transition focus:border-black"
               />
             </div>
 
             {/* Discount */}
-            <div>
+            <div className="min-w-0">
               <label className="mb-2 block font-medium">
                 الخصم (%)
               </label>
@@ -396,7 +391,8 @@ function Admin() {
                 placeholder="مثال: 20"
                 min="0"
                 max="100"
-                className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none transition focus:border-black"
+                inputMode="numeric"
+                className="box-border w-full min-w-0 rounded-xl border border-gray-300 px-4 py-3 outline-none transition focus:border-black"
               />
 
               {Number(form.discount_percent) > 0 &&
@@ -415,19 +411,19 @@ function Admin() {
             </div>
 
             {/* Image Upload */}
-            <div className="md:col-span-2">
+            <div className="min-w-0 md:col-span-2">
               <label className="mb-2 block font-medium">
                 صورة المنتج
               </label>
 
-              <div className="rounded-2xl border-2 border-dashed border-gray-300 p-5">
+              <div className="min-w-0 rounded-2xl border-2 border-dashed border-gray-300 p-4 sm:p-5">
 
                 <input
                   type="file"
                   accept="image/*"
                   onChange={handleImageUpload}
                   disabled={uploadingImage || saving}
-                  className="block w-full text-sm text-gray-600 file:mr-4 file:rounded-xl file:border-0 file:bg-black file:px-5 file:py-3 file:text-sm file:font-medium file:text-white hover:file:bg-gray-800"
+                  className="block w-full min-w-0 text-xs text-gray-600 file:mr-2 file:rounded-xl file:border-0 file:bg-black file:px-4 file:py-3 file:text-xs file:font-medium file:text-white hover:file:bg-gray-800 sm:text-sm"
                 />
 
                 {uploadingImage && (
@@ -438,19 +434,17 @@ function Admin() {
 
                 {form.image && !uploadingImage && (
                   <div className="mt-5">
-
                     <p className="mb-3 text-sm text-green-600">
                       تم اختيار الصورة بنجاح
                     </p>
 
-                    <div className="relative aspect-[4/5] max-w-xs overflow-hidden rounded-2xl bg-gray-100">
+                    <div className="relative aspect-[4/5] w-full max-w-xs overflow-hidden rounded-2xl bg-gray-100">
                       <img
                         src={form.image}
                         alt={form.name || "صورة المنتج"}
                         className="h-full w-full object-cover"
                       />
                     </div>
-
                   </div>
                 )}
 
@@ -481,12 +475,12 @@ function Admin() {
             </div>
 
             {/* Buttons */}
-            <div className="flex flex-wrap gap-3 md:col-span-2">
+            <div className="flex w-full flex-col gap-3 sm:flex-row md:col-span-2">
 
               <button
                 type="submit"
                 disabled={saving || uploadingImage}
-                className="rounded-xl bg-black px-8 py-3 font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
+                className="w-full rounded-xl bg-black px-8 py-3 font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
               >
                 {saving
                   ? "جاري الحفظ..."
@@ -502,7 +496,7 @@ function Admin() {
                   type="button"
                   onClick={resetForm}
                   disabled={saving || uploadingImage}
-                  className="rounded-xl border border-gray-300 bg-white px-8 py-3 font-medium text-gray-700 transition hover:border-black hover:text-black"
+                  className="w-full rounded-xl border border-gray-300 bg-white px-8 py-3 font-medium text-gray-700 transition hover:border-black hover:text-black sm:w-auto"
                 >
                   إلغاء التعديل
                 </button>
@@ -513,12 +507,12 @@ function Admin() {
         </div>
 
         {/* Products */}
-        <div className="mt-6 rounded-2xl bg-white p-6 shadow-sm">
+        <div className="mt-5 rounded-2xl bg-white p-5 shadow-sm sm:mt-6 sm:p-6">
 
-          <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+          <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
 
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">
+              <h2 className="text-xl font-bold text-gray-900 sm:text-2xl">
                 منتجات BIOR
               </h2>
 
@@ -531,7 +525,7 @@ function Admin() {
               type="button"
               onClick={fetchProducts}
               disabled={loading}
-              className="rounded-xl border border-gray-300 px-5 py-2.5 text-sm font-medium transition hover:border-black disabled:opacity-50"
+              className="w-full rounded-xl border border-gray-300 px-5 py-2.5 text-sm font-medium transition hover:border-black disabled:opacity-50 sm:w-auto"
             >
               {loading
                 ? "جاري التحميل..."
@@ -568,7 +562,7 @@ function Admin() {
                 return (
                   <div
                     key={product.id}
-                    className="overflow-hidden rounded-2xl border border-gray-200 bg-white"
+                    className="min-w-0 overflow-hidden rounded-2xl border border-gray-200 bg-white"
                   >
 
                     {/* Image */}
@@ -593,7 +587,7 @@ function Admin() {
                       )}
 
                       {/* New Badge */}
-                      {product.isNew && (
+                      {product.is_new && (
                         <span className="absolute right-3 top-3 rounded-full bg-black px-3 py-1 text-xs font-semibold text-white">
                           جديد
                         </span>
@@ -615,7 +609,7 @@ function Admin() {
                         {product.category}
                       </p>
 
-                      <h3 className="mt-2 font-bold text-gray-900">
+                      <h3 className="mt-2 break-words font-bold text-gray-900">
                         {product.name}
                       </h3>
 
@@ -623,7 +617,7 @@ function Admin() {
                       <div className="mt-3">
 
                         {discount > 0 ? (
-                          <div className="flex items-center gap-2">
+                          <div className="flex flex-wrap items-center gap-2">
 
                             <span className="text-lg font-bold text-red-600">
                               {finalPrice} جنيه
@@ -645,18 +639,17 @@ function Admin() {
                       {/* Saving */}
                       {discount > 0 && (
                         <p className="mt-2 text-xs text-green-600">
-                          توفير{" "}
-                          {originalPrice - finalPrice} جنيه
+                          توفير {originalPrice - finalPrice} جنيه
                         </p>
                       )}
 
                       {/* Actions */}
-                      <div className="mt-4 flex gap-2">
+                      <div className="mt-4 flex flex-col gap-2 sm:flex-row">
 
                         <button
                           type="button"
                           onClick={() => handleEdit(product)}
-                          className="flex-1 rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-800 transition hover:bg-gray-200"
+                          className="w-full rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-800 transition hover:bg-gray-200"
                         >
                           تعديل
                         </button>
@@ -666,7 +659,7 @@ function Admin() {
                           onClick={() =>
                             handleDelete(product.id)
                           }
-                          className="flex-1 rounded-xl border border-red-200 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-50"
+                          className="w-full rounded-xl border border-red-200 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-50"
                         >
                           حذف
                         </button>

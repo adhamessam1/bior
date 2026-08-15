@@ -4,12 +4,13 @@ function ProductCard({ product }) {
 
   const finalPrice =
     discount > 0
-      ? Math.round(originalPrice - originalPrice * (discount / 100))
+      ? Math.round(
+          originalPrice - originalPrice * (discount / 100)
+        )
       : originalPrice;
 
   return (
     <article className="group">
-
       {/* Product Image */}
       <div className="relative aspect-[4/5] overflow-hidden bg-[#f3f1ed]">
 
@@ -31,7 +32,7 @@ function ProductCard({ product }) {
         {product.image ? (
           <img
             src={product.image}
-            alt={product.name}
+            alt={product.name || "BIOR Product"}
             loading="lazy"
             className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
           />
@@ -91,7 +92,6 @@ function ProductCard({ product }) {
                 </span>
 
               </div>
-
             </div>
           ) : (
             <div className="flex items-center justify-between gap-3">
@@ -108,9 +108,7 @@ function ProductCard({ product }) {
           )}
 
         </div>
-
       </div>
-
     </article>
   );
 }

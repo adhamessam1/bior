@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
 import ProductCard from "../ProductCard/ProductCard";
 
-function Products({ searchTerm = "" }) {
+function Products({ searchTerm = "", showNew = false }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -32,14 +32,18 @@ function Products({ searchTerm = "" }) {
 
   let filteredProducts = products;
 
+  // =========================
   // الجديد
-  if (search === "الجديد") {
+  // =========================
+  if (showNew || search === "الجديد") {
     filteredProducts = products.filter(
       (product) => product.isNew === true
     );
   }
 
+  // =========================
   // البحث والأقسام
+  // =========================
   else if (search !== "") {
     filteredProducts = products.filter(
       (product) =>
@@ -51,9 +55,9 @@ function Products({ searchTerm = "" }) {
   return (
     <section
       id="products"
-      className="bg-white py-20 sm:py-24 lg:py-28"
+      className="w-full bg-white py-20 sm:py-24 lg:py-28"
     >
-      <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+      <div className="mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-10">
 
         {/* Section Header */}
         <div className="flex flex-col gap-8 border-b border-gray-200 pb-10 sm:flex-row sm:items-end sm:justify-between">
@@ -65,7 +69,7 @@ function Products({ searchTerm = "" }) {
             </span>
 
             <h2 className="mt-4 text-4xl font-light tracking-tight text-black sm:text-5xl lg:text-6xl">
-              {search === "الجديد"
+              {showNew || search === "الجديد"
                 ? "أحدث المنتجات"
                 : "تشكيلة BIOR"}
             </h2>
@@ -76,7 +80,9 @@ function Products({ searchTerm = "" }) {
             <p className="text-sm leading-8 text-gray-500 sm:text-base">
               {search
                 ? `النتائج الخاصة بـ "${search}"`
-                : "اكتشفي تشكيلات BIOR واختاري القطع اللي تناسب ستايلك."}
+                : showNew
+                  ? "أحدث القطع المضافة إلى تشكيلة BIOR."
+                  : "اكتشفي تشكيلات BIOR واختاري القطع اللي تناسب ستايلك."}
             </p>
 
             <div className="mt-4 flex items-center justify-end gap-2 text-xs text-gray-400">

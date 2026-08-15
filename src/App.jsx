@@ -5,10 +5,18 @@ function App() {
   const path = window.location.pathname;
 
   if (path === "/bior/admin" || path === "/admin") {
-    return <Admin />;
+    return (
+      <div className="min-h-screen w-full overflow-x-hidden">
+        <Admin />
+      </div>
+    );
   }
 
-  return <Home />;
+  return (
+    <div className="min-h-screen w-full overflow-x-hidden">
+      <Home />
+    </div>
+  );
 }
 
 export default App;
