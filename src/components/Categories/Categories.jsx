@@ -1,20 +1,65 @@
-function Categories({ setSearchTerm, setShowNew }) {
-  const categories = [
-    "شميز",
-    "هودي",
-    "تيشيرت",
-    "بنطلون",
-    "جيبة",
-    "سوت",
-    "توب",
-    "بلوز",
-    "جاكت",
-  ];
+import { useEffect, useState } from "react";
+
+import { supabase } from "../../lib/supabase";
+
+function Categories({
+  setSearchTerm,
+  setShowNew,
+  categoryId,
+  setCategoryId,
+  onCategoryChange,
+}) {
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // =========================
+  // FETCH CATEGORIES
+  // =========================
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      setLoading(true);
+
+      const { data, error } = await supabase
+        .from("categories")
+        .select(
+          "id, name, image, description, sort_order, is_visible"
+        )
+        .eq("is_visible", true)
+        .order("sort_order", { ascending: true })
+        .order("id", { ascending: true });
+
+      if (error) {
+        console.error("Categories fetch error:", error);
+        setCategories([]);
+      } else {
+        setCategories(data || []);
+      }
+
+      setLoading(false);
+    };
+
+    fetchCategories();
+  }, []);
+
+  // =========================
+  // CATEGORY CLICK
+  // =========================
 
   const handleCategoryClick = (category) => {
+    setSearchTerm("");
     setShowNew(false);
-    setSearchTerm(category);
 
+    // تحديث القسم الرئيسي
+    setCategoryId?.(Number(category.id));
+
+    // استخدام نفس الـ handler الموجود في Home
+    if (onCategoryChange) {
+      onCategoryChange(category);
+      return;
+    }
+
+    // Fallback
     setTimeout(() => {
       document.getElementById("products")?.scrollIntoView({
         behavior: "smooth",
@@ -23,7 +68,12 @@ function Categories({ setSearchTerm, setShowNew }) {
     }, 100);
   };
 
+  // =========================
+  // SHOW ALL
+  // =========================
+
   const handleShowAll = () => {
+    setCategoryId?.(null);
     setShowNew(false);
     setSearchTerm("");
 
@@ -42,7 +92,10 @@ function Categories({ setSearchTerm, setShowNew }) {
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
 
-        {/* Section Header */}
+        {/* =========================
+            SECTION HEADER
+        ========================= */}
+
         <div className="flex flex-col items-end text-right sm:flex-row sm:items-end sm:justify-between sm:gap-10">
 
           <div className="max-w-xl sm:text-right">
@@ -58,36 +111,130 @@ function Categories({ setSearchTerm, setShowNew }) {
           <p className="mt-5 max-w-md text-sm leading-7 text-gray-500 sm:mb-1 sm:mt-0 sm:text-base">
             تصفحي تشكيلات BIOR واختاري القسم اللي حابة تشوفي منتجاته.
           </p>
+
         </div>
 
-        {/* Categories */}
-        <div className="mt-14 grid grid-cols-2 gap-px overflow-hidden border border-gray-300 bg-gray-300 sm:grid-cols-3 lg:grid-cols-5">
-          {categories.map((category, index) => (
-            <button
-              key={category}
-              type="button"
-              onClick={() => handleCategoryClick(category)}
-              className="group relative flex min-h-[150px] items-end overflow-hidden bg-[#f6f3ef] p-5 text-right transition-colors duration-500 hover:bg-black sm:min-h-[180px] lg:min-h-[200px]"
-            >
-              {/* Number */}
-              <span className="absolute right-5 top-5 text-xs tracking-[0.2em] text-gray-400 transition-colors duration-500 group-hover:text-gray-500">
-                0{index + 1}
-              </span>
+        {/* =========================
+            LOADING
+        ========================= */}
 
-              {/* Arrow */}
-              <span className="absolute left-5 top-5 text-lg font-light text-gray-400 transition-all duration-500 group-hover:-translate-x-1 group-hover:text-white">
-                ←
-              </span>
+        {loading ? (
+          <div className="mt-14 border border-gray-300 bg-white py-16 text-center">
+            <p className="text-sm text-gray-500">
+              جاري تحميل الأقسام...
+            </p>
+          </div>
+        ) : categories.length === 0 ? (
+          <div className="mt-14 border border-gray-300 bg-white py-16 text-center">
+            <p className="text-sm text-gray-500">
+              لا توجد أقسام حاليًا.
+            </p>
+          </div>
+        ) : (
 
-              {/* Category Name */}
-              <span className="relative z-10 text-xl font-medium text-gray-900 transition-colors duration-500 group-hover:text-white sm:text-2xl">
-                {category}
-              </span>
-            </button>
-          ))}
-        </div>
+          /* =========================
+             CATEGORIES GRID
+          ========================= */
 
-        {/* Browse All */}
+          <div className="mt-14 grid grid-cols-2 gap-px overflow-hidden border border-gray-300 bg-gray-300 sm:grid-cols-3 lg:grid-cols-5">
+
+            {categories.map((category, index) => {
+              const isActive =
+                Number(categoryId) === Number(category.id);
+
+              return (
+                <button
+                  key={category.id}
+                  type="button"
+                  onClick={() =>
+                    handleCategoryClick(category)
+                  }
+                  className={`group relative flex min-h-[150px] items-end overflow-hidden text-right transition-colors duration-500 sm:min-h-[180px] lg:min-h-[200px] ${
+                    isActive
+                      ? "bg-black"
+                      : "bg-[#f6f3ef] hover:bg-black"
+                  }`}
+                >
+
+                  {/* CATEGORY IMAGE */}
+
+                  {category.image && (
+                    <img
+                      src={category.image}
+                      alt={category.name}
+                      className={`absolute inset-0 h-full w-full object-cover transition-all duration-500 ${
+                        isActive
+                          ? "scale-105 opacity-35"
+                          : "opacity-0 group-hover:scale-105 group-hover:opacity-35"
+                      }`}
+                    />
+                  )}
+
+                  {/* OVERLAY */}
+
+                  <div
+                    className={`absolute inset-0 bg-black transition-opacity duration-500 ${
+                      isActive
+                        ? "opacity-40"
+                        : "opacity-0 group-hover:opacity-40"
+                    }`}
+                  />
+
+                  {/* NUMBER */}
+
+                  <span
+                    className={`absolute right-5 top-5 z-10 text-xs tracking-[0.2em] transition-colors duration-500 ${
+                      isActive
+                        ? "text-white"
+                        : "text-gray-400 group-hover:text-white"
+                    }`}
+                  >
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+
+                  {/* ARROW */}
+
+                  <span
+                    className={`absolute left-5 top-5 z-10 text-lg font-light transition-all duration-500 ${
+                      isActive
+                        ? "-translate-x-1 text-white"
+                        : "text-gray-400 group-hover:-translate-x-1 group-hover:text-white"
+                    }`}
+                  >
+                    ←
+                  </span>
+
+                  {/* ACTIVE LABEL */}
+
+                  {isActive && (
+                    <span className="absolute bottom-5 left-5 z-10 text-[10px] font-medium tracking-[0.2em] text-white">
+                      SELECTED
+                    </span>
+                  )}
+
+                  {/* NAME */}
+
+                  <span
+                    className={`relative z-10 p-5 text-xl font-medium transition-colors duration-500 sm:text-2xl ${
+                      isActive
+                        ? "text-white"
+                        : "text-gray-900 group-hover:text-white"
+                    }`}
+                  >
+                    {category.name}
+                  </span>
+
+                </button>
+              );
+            })}
+
+          </div>
+        )}
+
+        {/* =========================
+            SHOW ALL PRODUCTS
+        ========================= */}
+
         <div className="mt-12 flex justify-center">
           <button
             type="button"
