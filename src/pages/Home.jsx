@@ -15,7 +15,6 @@ function Home() {
   // ==========================================
   // اختيار قسم
   // ==========================================
-
   const handleCategoryChange = (category) => {
     setCategoryId(Number(category.id));
     setSearchTerm("");
@@ -32,7 +31,6 @@ function Home() {
   // ==========================================
   // الجديد
   // ==========================================
-
   const handleShowNew = () => {
     setCategoryId(null);
     setSearchTerm("");
@@ -49,7 +47,6 @@ function Home() {
   // ==========================================
   // الرئيسية
   // ==========================================
-
   const handleHome = () => {
     setCategoryId(null);
     setSearchTerm("");
@@ -66,7 +63,6 @@ function Home() {
       {/* ======================================
           NAVBAR
       ====================================== */}
-
       <Navbar
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
@@ -82,19 +78,16 @@ function Home() {
       {/* ======================================
           HERO
       ====================================== */}
-
       <Hero />
 
       {/* ======================================
           FEATURES
       ====================================== */}
-
       <Features />
 
       {/* ======================================
           CATEGORIES
       ====================================== */}
-
       <Categories
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
@@ -109,7 +102,6 @@ function Home() {
       {/* ======================================
           PRODUCTS
       ====================================== */}
-
       <Products
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
@@ -120,9 +112,33 @@ function Home() {
       />
 
       {/* ======================================
+          SEO INTRO
+      ====================================== */}
+      <section
+        dir="rtl"
+        className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8"
+      >
+        <div className="rounded-2xl bg-gray-50 px-6 py-8 text-center sm:px-10">
+          <h2 className="mb-4 text-2xl font-bold text-gray-900">
+            BIOR – بيور | ملابس حريمي في المنصورة
+          </h2>
+
+          <p className="mx-auto max-w-4xl text-base leading-8 text-gray-600">
+            BIOR (بيور) هو براند ملابس حريمي في المنصورة، يقدم مجموعة متنوعة
+            من الملابس النسائية العصرية. اكتشفي تشكيلات القمصان، التيشيرتات،
+            الهوديز، البنطلونات، الجيب، السوت، التوبات، البلوزات والجاكتات.
+          </p>
+
+          <p className="mx-auto mt-4 max-w-4xl text-base leading-8 text-gray-600">
+            يمكنك تصفح المنتجات والتعرف على أحدث التشكيلات المتوفرة من BIOR،
+            ثم زيارة الفرع في المنصورة لمشاهدة المنتجات المتاحة.
+          </p>
+        </div>
+      </section>
+
+      {/* ======================================
           FOOTER
       ====================================== */}
-
       <Footer />
     </>
   );
