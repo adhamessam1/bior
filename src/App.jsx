@@ -3,11 +3,8 @@ import { useEffect, useState } from "react";
 import { supabase } from "./lib/supabase";
 
 import Home from "./pages/Home";
-
 import Products from "./components/Products/Products";
-
 import ProductDetails from "./pages/ProductDetails";
-
 import Admin from "./pages/Admin";
 
 const BASE_URL = "";
@@ -51,12 +48,7 @@ function App() {
 
     if (!descriptionTag) {
       descriptionTag = document.createElement("meta");
-
-      descriptionTag.setAttribute(
-        "name",
-        "description"
-      );
-
+      descriptionTag.setAttribute("name", "description");
       document.head.appendChild(descriptionTag);
     }
 
@@ -75,12 +67,7 @@ function App() {
 
     if (!keywordsTag) {
       keywordsTag = document.createElement("meta");
-
-      keywordsTag.setAttribute(
-        "name",
-        "keywords"
-      );
-
+      keywordsTag.setAttribute("name", "keywords");
       document.head.appendChild(keywordsTag);
     }
 
@@ -99,12 +86,7 @@ function App() {
 
     if (!ogTitleTag) {
       ogTitleTag = document.createElement("meta");
-
-      ogTitleTag.setAttribute(
-        "property",
-        "og:title"
-      );
-
+      ogTitleTag.setAttribute("property", "og:title");
       document.head.appendChild(ogTitleTag);
     }
 
@@ -123,12 +105,10 @@ function App() {
 
     if (!ogDescriptionTag) {
       ogDescriptionTag = document.createElement("meta");
-
       ogDescriptionTag.setAttribute(
         "property",
         "og:description"
       );
-
       document.head.appendChild(ogDescriptionTag);
     }
 
@@ -148,12 +128,10 @@ function App() {
 
       if (!ogImageTag) {
         ogImageTag = document.createElement("meta");
-
         ogImageTag.setAttribute(
           "property",
           "og:image"
         );
-
         document.head.appendChild(ogImageTag);
       }
 
@@ -162,6 +140,43 @@ function App() {
         siteSettings.seo_og_image.trim()
       );
     }
+
+    // =========================
+    // STRUCTURED DATA
+    // =========================
+
+    const structuredDataId = "bior-structured-data";
+
+    let structuredData = document.getElementById(
+      structuredDataId
+    );
+
+    if (!structuredData) {
+      structuredData = document.createElement("script");
+
+      structuredData.id = structuredDataId;
+      structuredData.type = "application/ld+json";
+
+      document.head.appendChild(structuredData);
+    }
+
+    structuredData.textContent = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "ClothingStore",
+      "@id": "https://bior-fashion.vercel.app/#organization",
+      "name": "BIOR",
+      "alternateName": "بيور",
+      "url": "https://bior-fashion.vercel.app/",
+      "logo": "https://bior-fashion.vercel.app/bior-logo-mark.webp",
+      "description":
+        "BIOR (بيور) - ملابس حريمي في المنصورة.",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Mansoura",
+        "addressRegion": "Dakahlia",
+        "addressCountry": "EG"
+      }
+    });
   }, [siteSettings]);
 
   // =========================
@@ -194,7 +209,6 @@ function App() {
     }
 
     setSiteSettings(data || {});
-
     setLoadingSite(false);
   };
 
