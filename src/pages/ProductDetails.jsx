@@ -10,13 +10,10 @@ function ProductDetails({ productId }) {
   const [product, setProduct] = useState(null);
   const [productImages, setProductImages] = useState([]);
   const [relatedProducts, setRelatedProducts] = useState([]);
-
   const [selectedImage, setSelectedImage] = useState("");
-
   const [loading, setLoading] = useState(true);
   const [loadingImages, setLoadingImages] = useState(true);
   const [loadingRelated, setLoadingRelated] = useState(true);
-
   const [error, setError] = useState("");
 
   // ==========================================
@@ -46,8 +43,8 @@ function ProductDetails({ productId }) {
 
         setProduct(null);
         setError("المنتج غير موجود أو لم يعد متاحًا.");
-        setLoading(false);
 
+        setLoading(false);
         return;
       }
 
@@ -59,6 +56,335 @@ function ProductDetails({ productId }) {
       fetchProduct();
     }
   }, [productId]);
+
+  // ==========================================
+  // PRODUCT SEO
+  // ==========================================
+
+  useEffect(() => {
+    if (!product) return;
+
+    const productName =
+      product.name?.trim() || "منتج من BIOR";
+
+    const productCategory =
+      product.categories?.name ||
+      product.category ||
+      "ملابس حريمي";
+
+    const seoTitle =
+      product.seo_title?.trim() ||
+      `${productName} | BIOR – بيور`;
+
+    const seoDescription =
+      product.seo_description?.trim() ||
+      product.short_description?.trim() ||
+      product.description?.trim() ||
+      product.caption?.trim() ||
+      `${productName} من BIOR (بيور) - ${productCategory} في المنصورة.`;
+
+    // ------------------------------------------
+    // PAGE TITLE
+    // ------------------------------------------
+
+    document.title = seoTitle;
+
+    // ------------------------------------------
+    // META DESCRIPTION
+    // ------------------------------------------
+
+    let descriptionTag = document.querySelector(
+      'meta[name="description"]'
+    );
+
+    if (!descriptionTag) {
+      descriptionTag = document.createElement("meta");
+
+      descriptionTag.setAttribute(
+        "name",
+        "description"
+      );
+
+      document.head.appendChild(descriptionTag);
+    }
+
+    descriptionTag.setAttribute(
+      "content",
+      seoDescription.slice(0, 160)
+    );
+
+    // ------------------------------------------
+    // OPEN GRAPH TITLE
+    // ------------------------------------------
+
+    let ogTitleTag = document.querySelector(
+      'meta[property="og:title"]'
+    );
+
+    if (!ogTitleTag) {
+      ogTitleTag = document.createElement("meta");
+
+      ogTitleTag.setAttribute(
+        "property",
+        "og:title"
+      );
+
+      document.head.appendChild(ogTitleTag);
+    }
+
+    ogTitleTag.setAttribute(
+      "content",
+      seoTitle
+    );
+
+    // ------------------------------------------
+    // OPEN GRAPH DESCRIPTION
+    // ------------------------------------------
+
+    let ogDescriptionTag = document.querySelector(
+      'meta[property="og:description"]'
+    );
+
+    if (!ogDescriptionTag) {
+      ogDescriptionTag = document.createElement("meta");
+
+      ogDescriptionTag.setAttribute(
+        "property",
+        "og:description"
+      );
+
+      document.head.appendChild(ogDescriptionTag);
+    }
+
+    ogDescriptionTag.setAttribute(
+      "content",
+      seoDescription.slice(0, 160)
+    );
+
+    // ------------------------------------------
+    // OPEN GRAPH IMAGE
+    // ------------------------------------------
+
+    const productImage =
+      product.og_image?.trim() ||
+      product.image?.trim() ||
+      product.image_url?.trim() ||
+      "";
+
+    if (productImage) {
+      let ogImageTag = document.querySelector(
+        'meta[property="og:image"]'
+      );
+
+      if (!ogImageTag) {
+        ogImageTag = document.createElement("meta");
+
+        ogImageTag.setAttribute(
+          "property",
+          "og:image"
+        );
+
+        document.head.appendChild(ogImageTag);
+      }
+
+      ogImageTag.setAttribute(
+        "content",
+        productImage
+      );
+    }
+
+    // ------------------------------------------
+    // OPEN GRAPH URL
+    // ------------------------------------------
+
+    const productUrl =
+      `${window.location.origin}/product/${product.id}`;
+
+    let ogUrlTag = document.querySelector(
+      'meta[property="og:url"]'
+    );
+
+    if (!ogUrlTag) {
+      ogUrlTag = document.createElement("meta");
+
+      ogUrlTag.setAttribute(
+        "property",
+        "og:url"
+      );
+
+      document.head.appendChild(ogUrlTag);
+    }
+
+    ogUrlTag.setAttribute(
+      "content",
+      productUrl
+    );
+
+    // ------------------------------------------
+    // CANONICAL URL
+    // ------------------------------------------
+
+    let canonicalTag = document.querySelector(
+      'link[rel="canonical"]'
+    );
+
+    if (!canonicalTag) {
+      canonicalTag = document.createElement("link");
+
+      canonicalTag.setAttribute(
+        "rel",
+        "canonical"
+      );
+
+      document.head.appendChild(canonicalTag);
+    }
+
+    canonicalTag.setAttribute(
+      "href",
+      productUrl
+    );
+  }, [product]);
+
+  // ==========================================
+  // PRODUCT STRUCTURED DATA
+  // ==========================================
+
+  useEffect(() => {
+    if (!product) return;
+
+    const productName =
+      product.name?.trim() || "منتج من BIOR";
+
+    const productDescription =
+      product.seo_description?.trim() ||
+      product.short_description?.trim() ||
+      product.description?.trim() ||
+      product.caption?.trim() ||
+      `${productName} من BIOR (بيور).`;
+
+    const productImage =
+      product.og_image?.trim() ||
+      product.image?.trim() ||
+      product.image_url?.trim() ||
+      "";
+
+    const productUrl =
+      `${window.location.origin}/product/${product.id}`;
+
+    const discount =
+      Number(product.discount_percent) || 0;
+
+    const originalPrice =
+      Number(
+        product.original_price ??
+          product.old_price ??
+          product.price
+      ) || 0;
+
+    const finalPrice =
+      discount > 0
+        ? Math.round(
+            originalPrice -
+              originalPrice * (discount / 100)
+          )
+        : Number(product.price) ||
+          originalPrice;
+
+    const schema = {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      "@id": `${productUrl}#product`,
+
+      name: productName,
+
+      description: productDescription,
+
+      url: productUrl,
+
+      brand: {
+        "@type": "Brand",
+        name: "BIOR",
+      },
+
+      category:
+        product.categories?.name ||
+        product.category ||
+        "ملابس حريمي",
+
+      ...(productImage
+        ? {
+            image: [productImage],
+          }
+        : {}),
+
+      ...(product.sku
+        ? {
+            sku: product.sku,
+          }
+        : {}),
+
+      offers: {
+        "@type": "Offer",
+
+        url: productUrl,
+
+        priceCurrency: "EGP",
+
+        price: finalPrice,
+
+        availability:
+          product.is_available !== false
+            ? "https://schema.org/InStock"
+            : "https://schema.org/OutOfStock",
+
+        itemCondition:
+          "https://schema.org/NewCondition",
+
+        seller: {
+          "@type": "Organization",
+          name: "BIOR",
+          url: window.location.origin,
+        },
+      },
+    };
+
+    const structuredDataId =
+      "bior-product-structured-data";
+
+    let structuredData =
+      document.getElementById(
+        structuredDataId
+      );
+
+    if (!structuredData) {
+      structuredData =
+        document.createElement("script");
+
+      structuredData.id =
+        structuredDataId;
+
+      structuredData.type =
+        "application/ld+json";
+
+      document.head.appendChild(
+        structuredData
+      );
+    }
+
+    structuredData.textContent =
+      JSON.stringify(schema);
+
+    return () => {
+      const existing =
+        document.getElementById(
+          structuredDataId
+        );
+
+      if (existing) {
+        existing.remove();
+      }
+    };
+  }, [product]);
 
   // ==========================================
   // FETCH PRODUCT IMAGES
@@ -78,7 +404,11 @@ function ProductDetails({ productId }) {
         .order("id", { ascending: true });
 
       if (error) {
-        console.error("Product images error:", error);
+        console.error(
+          "Product images error:",
+          error
+        );
+
         setProductImages([]);
       } else {
         setProductImages(data || []);
@@ -98,12 +428,17 @@ function ProductDetails({ productId }) {
     if (!product) return;
 
     if (productImages.length > 0) {
-      setSelectedImage(productImages[0].image_url);
+      setSelectedImage(
+        productImages[0].image_url
+      );
+
       return;
     }
 
     setSelectedImage(
-      product.image || product.image_url || ""
+      product.image ||
+        product.image_url ||
+        ""
     );
   }, [product, productImages]);
 
@@ -133,11 +468,18 @@ function ProductDetails({ productId }) {
               name
             )
           `)
-          .eq("category_id", product.category_id)
+          .eq(
+            "category_id",
+            product.category_id
+          )
           .eq("is_available", true)
           .neq("id", product.id)
-          .order("sort_order", { ascending: true })
-          .order("created_at", { ascending: false })
+          .order("sort_order", {
+            ascending: true,
+          })
+          .order("created_at", {
+            ascending: false,
+          })
           .limit(4);
 
         if (error) {
@@ -166,8 +508,12 @@ function ProductDetails({ productId }) {
           `)
           .eq("is_available", true)
           .neq("id", product.id)
-          .order("sort_order", { ascending: true })
-          .order("created_at", { ascending: false })
+          .order("sort_order", {
+            ascending: true,
+          })
+          .order("created_at", {
+            ascending: false,
+          })
           .limit(12);
 
         if (error) {
@@ -177,11 +523,14 @@ function ProductDetails({ productId }) {
           );
         } else {
           const existingIds = new Set(
-            suggestions.map((item) => item.id)
+            suggestions.map(
+              (item) => item.id
+            )
           );
 
           const extraProducts = (data || []).filter(
-            (item) => !existingIds.has(item.id)
+            (item) =>
+              !existingIds.has(item.id)
           );
 
           suggestions = [
@@ -192,6 +541,7 @@ function ProductDetails({ productId }) {
       }
 
       setRelatedProducts(suggestions);
+
       setLoadingRelated(false);
     };
 
@@ -239,9 +589,11 @@ function ProductDetails({ productId }) {
       discount > 0
         ? Math.round(
             originalPrice -
-              originalPrice * (discount / 100)
+              originalPrice *
+                (discount / 100)
           )
-        : Number(product.price) || originalPrice;
+        : Number(product.price) ||
+          originalPrice;
 
     return {
       originalPrice,
@@ -255,7 +607,10 @@ function ProductDetails({ productId }) {
   // ==========================================
 
   const formatDetails = (value) => {
-    if (value === null || value === undefined) {
+    if (
+      value === null ||
+      value === undefined
+    ) {
       return "";
     }
 
@@ -307,7 +662,9 @@ function ProductDetails({ productId }) {
             typeof val === "object" &&
             val !== null
           ) {
-            return `${key}: ${JSON.stringify(val)}`;
+            return `${key}: ${JSON.stringify(
+              val
+            )}`;
           }
 
           return `${key}: ${String(val)}`;
@@ -323,7 +680,8 @@ function ProductDetails({ productId }) {
   // ==========================================
 
   const openProduct = (id) => {
-    window.location.href = `${BASE_PATH}/product/${id}`;
+    window.location.href =
+      `${BASE_PATH}/product/${id}`;
   };
 
   // ==========================================
@@ -331,7 +689,8 @@ function ProductDetails({ productId }) {
   // ==========================================
 
   const goHome = () => {
-    window.location.href = `${BASE_PATH}/`;
+    window.location.href =
+      `${BASE_PATH}/`;
   };
 
   // ==========================================
@@ -402,7 +761,10 @@ function ProductDetails({ productId }) {
 
   const allImages = [];
 
-  if (product.image || product.image_url) {
+  if (
+    product.image ||
+    product.image_url
+  ) {
     allImages.push({
       id: "main",
       image_url:
@@ -416,7 +778,8 @@ function ProductDetails({ productId }) {
       item.image_url &&
       !allImages.some(
         (image) =>
-          image.image_url === item.image_url
+          image.image_url ===
+          item.image_url
       )
     ) {
       allImages.push(item);
@@ -471,15 +834,12 @@ function ProductDetails({ productId }) {
 
           <div>
             <div className="relative overflow-hidden bg-[#f3f1ed]">
-              {/* NEW */}
 
               {product.isNew && (
                 <span className="absolute right-5 top-5 z-20 bg-white px-4 py-2 text-[10px] font-medium tracking-[0.2em] text-black shadow-sm">
                   NEW
                 </span>
               )}
-
-              {/* DISCOUNT */}
 
               {priceData.discount > 0 && (
                 <span className="absolute left-5 top-5 z-20 bg-black px-4 py-2 text-[10px] font-medium tracking-[0.15em] text-white">
@@ -502,10 +862,6 @@ function ProductDetails({ productId }) {
                 </div>
               )}
             </div>
-
-            {/* ===================================
-                IMAGE THUMBNAILS
-            =================================== */}
 
             {!loadingImages &&
               allImages.length > 1 && (
@@ -551,6 +907,7 @@ function ProductDetails({ productId }) {
           ===================================== */}
 
           <div className="flex flex-col justify-center text-right">
+
             <p className="text-xs font-medium tracking-[0.3em] text-gray-400">
               BIOR COLLECTION
             </p>
@@ -595,6 +952,7 @@ function ProductDetails({ productId }) {
               </h2>
 
               <div className="mt-4 max-w-xl text-sm leading-8 text-gray-500">
+
                 {description && (
                   <p className="whitespace-pre-line">
                     {description}
@@ -626,6 +984,7 @@ function ProductDetails({ productId }) {
             {/* PRODUCT INFO */}
 
             <div className="mt-10 border-t border-gray-200">
+
               <div className="flex items-center justify-between border-b border-gray-200 py-4">
                 <span className="text-sm text-gray-400">
                   القسم
@@ -696,7 +1055,9 @@ function ProductDetails({ productId }) {
 
       <section className="border-t border-gray-200 bg-white">
         <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-20 lg:px-10 lg:py-24">
+
           <div className="flex flex-col gap-5 border-b border-gray-200 pb-8 sm:flex-row sm:items-end sm:justify-between">
+
             <div className="text-right">
               <span className="text-xs font-medium tracking-[0.3em] text-gray-400">
                 BIOR FOR YOU
